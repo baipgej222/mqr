@@ -2,12 +2,14 @@ package com.molicloud.mqr.framework.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import com.molicloud.mqr.plugin.core.PluginResult;
 import com.molicloud.mqr.plugin.core.message.MessageBuild;
 import com.molicloud.mqr.plugin.core.message.make.Ats;
 import com.molicloud.mqr.plugin.core.message.make.Expression;
 import com.molicloud.mqr.plugin.core.message.make.Img;
 import com.molicloud.mqr.plugin.core.message.make.Text;
+import com.molicloud.mqr.plugin.core.message.single.Card;
 import com.molicloud.mqr.plugin.core.message.single.Share;
 import lombok.experimental.UtilityClass;
 import net.mamoe.mirai.contact.ContactList;
@@ -50,6 +52,8 @@ public class MessageUtil {
             return MessageUtil.buildShareMessage((Share) pluginResultData);
         } else if (pluginResultData instanceof Expression) {
             return MessageUtil.buildFaceMessage((Expression) pluginResultData);
+        } else if (pluginResultData instanceof Card) {
+            return MessageUtil.buildCardMessage((Card) pluginResultData);
         }
         return null;
     }
@@ -210,5 +214,34 @@ public class MessageUtil {
      */
     private Face buildFaceMessage(Expression expression) {
         return new Face(expression.getFaceId());
+    }
+
+    /**
+     * 构建卡片消息 TODO 待优化
+     *
+     * @param card
+     * @return
+     */
+    private LightApp buildCardMessage(Card card) {
+        JSONObject object = new JSONObject();
+        JSONObject meta = new JSONObject();
+        JSONObject notification = new JSONObject();
+        JSONObject info = new JSONObject();
+
+        object.putOpt("app", "com.tencent.miniapp").putOpt("desc", "").putOpt("view", "notification");
+        object.putOpt("ver", "1.0.0.11").putOpt("appID", "").putOpt("prompt", card.getPrompt()).putOpt("sourceName", "");
+        object.putOpt("actionData", "").putOpt("actionData_A", "").putOpt("sourceUrl", "");
+
+        info.putOpt("appName", card.getTitle()).putOpt("appType", 4).putOpt("appid", 1109659848).putOpt("iconUrl", card.getIcon());
+
+        notification.putOpt("appInfo", info);
+        notification.putOpt("data", card.getData());
+        notification.putOpt("button", card.getButton());
+        notification.putOpt("emphasis_keyword", "").putOpt("title", card.getSubtitle());
+
+        meta.putOpt("notification", notification);
+        object.putOpt("meta", meta);
+
+        return new LightApp(object.toString());
     }
 }

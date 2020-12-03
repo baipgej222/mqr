@@ -13,33 +13,42 @@ import java.util.Date;
 
 /**
  * <p>
- * 配置表
+ * 机器人插件
  * </p>
  *
  * @author feitao
- * @since 2020-11-07
+ * @since 2020-12-02
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="SysSetting对象", description="配置表")
-public class SysSetting implements Serializable {
+@ApiModel(value="RobotPlugin对象", description="机器人插件")
+public class RobotPlugin implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
-    @ApiModelProperty(value = "配置名")
+    @ApiModelProperty(value = "插件名")
     private String name;
 
-    @ApiModelProperty(value = "配置值")
-    private String value;
+    @ApiModelProperty(value = "插件类名")
+    private String className;
 
-    @ApiModelProperty(value = "备注")
-    private String remark;
+    @ApiModelProperty(value = "作者")
+    private String author;
 
-    @ApiModelProperty(value = "配置类型（1：系统，2：插件）")
-    private Integer type;
+    @ApiModelProperty(value = "主页")
+    private String homeUrl;
+
+    @ApiModelProperty(value = "说明")
+    private String explain;
+
+    @ApiModelProperty(value = "版本代号")
+    private Integer version;
+
+    @ApiModelProperty(value = "状态")
+    private Integer state;
 
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
