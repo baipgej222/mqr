@@ -18,13 +18,28 @@ public enum RobotEventEnum {
     /**
      * 群消息
      */
-    GROUP_MSG;
+    GROUP_MSG,
+
+    /**
+     * 群成员的临时消息
+     */
+    TEMP_MSG,
+
+    /**
+     * 申请入群
+     */
+    MEMBER_JOIN_REQUEST,
+
+    /**
+     * 群成员已经加群
+     */
+    MEMBER_JOIN;
 
     /**
      * 机器人消息类型的事件枚举
      */
     public static final RobotEventEnum[] robotMessageEventEnums = new RobotEventEnum[]{
-            FRIEND_MSG, GROUP_MSG
+            FRIEND_MSG, GROUP_MSG, TEMP_MSG
     };
 
     /**

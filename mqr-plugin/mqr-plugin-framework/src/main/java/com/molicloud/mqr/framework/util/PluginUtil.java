@@ -2,7 +2,7 @@ package com.molicloud.mqr.framework.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.molicloud.mqr.framework.PluginSettingInitialize;
+import com.molicloud.mqr.framework.initialize.PluginSettingInitialize;
 import com.molicloud.mqr.plugin.core.PluginContextHolder;
 import com.molicloud.mqr.plugin.core.PluginParam;
 import com.molicloud.mqr.plugin.core.PluginResult;
@@ -11,11 +11,12 @@ import com.molicloud.mqr.plugin.core.enums.ExecuteTriggerEnum;
 import com.molicloud.mqr.plugin.core.enums.RobotEventEnum;
 import com.molicloud.mqr.framework.PluginExecutorRegistrar;
 import com.molicloud.mqr.framework.common.PluginHook;
-import com.molicloud.mqr.framework.event.PluginResultEvent;
+import com.molicloud.mqr.framework.listener.event.PluginResultEvent;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -60,18 +61,26 @@ public class PluginUtil {
                 List<PluginHook> keywordPluginHookList = normalPluginHookList.stream()
                         .filter(pluginHook -> {
                             boolean result = false;
+                            String keyword = "";
                             String message = String.valueOf(pluginParam.getData());
                             if (CollUtil.isNotEmpty(pluginHook.getEqualsKeywords())) {
                                 result = pluginHook.getEqualsKeywords().contains(message);
+                                keyword = getKeyword(pluginHook.getEqualsKeywords(), message);
                             }
                             if (!result && CollUtil.isNotEmpty(pluginHook.getStartsKeywords())) {
                                 result = pluginHook.getStartsKeywords().stream().anyMatch(keywords -> StrUtil.startWith(message, keywords));
+                                keyword = getKeyword(pluginHook.getStartsKeywords(), message);
                             }
                             if (!result && CollUtil.isNotEmpty(pluginHook.getEndsKeywords())) {
                                 result = pluginHook.getEndsKeywords().stream().anyMatch(keywords -> StrUtil.endWith(message, keywords));
+                                keyword = getKeyword(pluginHook.getEndsKeywords(), message);
                             }
                             if (!result && CollUtil.isNotEmpty(pluginHook.getContainsKeywords())) {
                                 result = pluginHook.getContainsKeywords().stream().anyMatch(keywords -> StrUtil.contains(message, keywords));
+                                keyword = getKeyword(pluginHook.getContainsKeywords(), message);
+                            }
+                            if (result) {
+                                pluginParam.setKeyword(keyword);
                             }
                             return result;
                         }).collect(Collectors.toList());
@@ -94,6 +103,22 @@ public class PluginUtil {
         }
 
         return false;
+    }
+
+    /**
+     * 获取插件被触发的关键字/词
+     *
+     * @param keywords
+     * @param message
+     * @return
+     */
+    private String getKeyword(Set<String> keywords, String message) {
+        for (String str : keywords) {
+            if (StrUtil.contains(message, str)) {
+                return str;
+            }
+        }
+        return "";
     }
 
     /**
